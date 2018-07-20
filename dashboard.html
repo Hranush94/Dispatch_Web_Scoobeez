@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dispatch</title>
+
+    <!--<link href="img/favicon.png" rel="icon" type="image/png">-->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="css/lib/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" href="css/separate/vendor/flatpickr.min.css">
+    <link rel="stylesheet" href="css/separate/vendor/bootstrap-daterangepicker.min.css">
+    <link rel="stylesheet" href="css/lib/clockpicker/bootstrap-clockpicker.min.css">
+    <link rel="stylesheet" href="css/separate/pages/profile.min.css">
+    <link rel="stylesheet" href="css/separate/vendor/bootstrap-select/bootstrap-select.min.css">
+    <link rel="stylesheet" href="css/separate/vendor/select2.min.css">
+    <link rel="stylesheet" href="css/separate/vendor/typeahead.min.css">
+    <link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
+    <link rel="stylesheet" href="css/lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/custom.css">
+
+    <style type="text/css" media="screen">
+
+
+        .side-menu .jspPane{
+            max-height: 100% !important;
+        }
+
+        .select2{
+            height: 48px !important;
+            background: #fff !important;
+            /*border: 1px solid #D9D9D9 !important;*/
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute !important;
+            top: 0px;
+            left: 0px;
+        }
+
+        .spinner {
+            width: 150px;
+            height: 150px;
+
+            position: relative;
+
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -75px 0 0 -75px;
+
+        }
+
+        .double-bounce1, .double-bounce2 {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #d2d2d2;
+            opacity: 0.6;
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+            animation: sk-bounce 2.0s infinite ease-in-out;
+        }
+
+        .double-bounce2 {
+            -webkit-animation-delay: -1.0s;
+            animation-delay: -1.0s;
+        }
+
+        @-webkit-keyframes sk-bounce {
+            0%, 100% {
+                -webkit-transform: scale(0.0)
+            }
+            50% {
+                -webkit-transform: scale(1.0)
+            }
+        }
+
+        @keyframes sk-bounce {
+            0%, 100% {
+                transform: scale(0.0);
+                -webkit-transform: scale(0.0);
+            }
+            50% {
+                transform: scale(1.0);
+                -webkit-transform: scale(1.0);
+            }
+        }
+    </style>
+
+</head>
+<body class="with-side-menu">
+<div id="loading" style="width: 100%; position: fixed; height: 100%; background: rgba(0,0,0,.7); z-index: 99999999999;">
+    <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+    </div>
+</div>
+<div class="mobile-menu-left-overlay"></div>
+<button id="show-hide-sidebar-toggle" class="toggle-fixed">
+    <img src="img/ic_back2.png" width="8">
+</button>
+<button class="hamburger hamburger--htla">
+    <span>toggle menu</span>
+</button>
+<nav class="side-menu">
+    <div class="panel-pic">
+        <article class="friends-list-item">
+            <div class="user-card-row">
+                <div class="tbl-row">
+                    <div class="tbl-cell tbl-cell-photo">
+                        <a href="#">
+                            <img id="main_icon" src="" width="50" height="50" style="height: 50px; width: 50px;" alt="">
+                        </a>
+                    </div>
+                    <div class="tbl-cell">
+                        <p class="user-card-row-name">Location/ Site: <a href="javascript:void(0);" onclick="getShifts();" style="right: 5px;text-align: right;margin-top: -20px;float: right;color: #fff;top: 10px;" class="glyphicon glyphicon-refresh"></a></p> <br>
+                        <div class="dropdown dropdown-typical">
+                            <a class="dropdown-toggle" data-toggle="modal" data-target="#location_sites">
+                                <span class="user-card-row-location" id="location_set"></span>
+                            </a>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+    <div class="empty-xs-50 empty-md-50"></div>
+    <ul class="side-menu-list" id="left_menu_content">
+        <li class="with-sub" id="menu_item_drivers" >
+	        	<span onclick="loadShifts();">
+	                <i class="scoo-icon scoo-icon-1"></i>
+	                <span class="lbl">Drivers </span>
+	            </span>
+            <ul id="driverList">
+                <li class=" ">
+                    <span class="lbl2">Please Re-Select Jobsite</span></a>
+                </li>
+            </ul>
+
+        </li>
+        <li onclick="pullDispatchersReport();" id="menu_item_dispatcher" >
+            <a href="javascript:void(0);" data-toggle="modal" data-target="#dispatcher_reports" class="clicked">
+                <i class="scoo-icon scoo-icon-2"></i>
+                <span class="lbl">Dispatcher Reports</span>
+            </a>
+        </li>
+        <li onclick="schedule_route();" id="menu_item_assignment">
+            <a href="javascript:void(0);"  class="clicked">
+                <i class="scoo-icon scoo-icon-3"></i>
+                <span class="lbl">Route Data</span>
+            </a>
+        </li>
+        <li onclick="reported_drivers();" id="menu_item_reported">
+            <a href="javascript:void(0);"  class="clicked">
+                <i class="scoo-icon scoo-icon-3"></i>
+                <span class="lbl">REPORTED DRIVERS</span>
+            </a>
+        </li>
+        <li onclick="progress_statics();" id="menu_item_statistics">
+            <a href="javascript:void(0);"  class="clicked">
+                <i class="scoo-icon scoo-icon-4"></i>
+                <span class="lbl">Progress Statistics</span>
+            </a>
+        </li>
+        <li onclick="allRescues();" id="menu_item_rescue" >
+            <a href="javascript:void(0);" class="clicked">
+                <i class="scoo-icon scoo-icon-5"></i>
+                <span class="lbl">Rescues</span>
+            </a>
+        </li>
+        <li onclick="vehicle_inspections();" id="menu_item_inspection" >
+            <a href="javascript:void(0);" class="clicked">
+                <i class="scoo-icon scoo-icon-6"></i>
+                <span class="lbl">Vehicle Inspections</span>
+            </a>
+        </li>
+
+        <li onclick="incident_reports();" id="menu_item_incident_reports" >
+            <a href="javascript:void(0);" class="clicked">
+                <i class="scoo-icon scoo-icon-6"></i>
+                <span class="lbl">Incident Report</span>
+            </a>
+        </li>
+
+        <li onclick="inventory();" id="menu_item_inventory" >
+            <a href="javascript:void(0);" class="clicked">
+                <i class="scoo-icon scoo-icon-7"></i>
+                <span class="lbl">van details</span>
+            </a>
+        </li>
+        <li id="menu_item_supplies">
+            <a href="javascript:void(0);" data-toggle="modal" data-target="#supplies" class="clicked">
+                <i class="scoo-icon scoo-icon-8"></i>
+                <span class="lbl">Supplies</span>
+            </a>
+        </li>
+
+    </ul>
+</nav>
+<div class="page-content">
+    <div class="container-fluid p-x-0 p-mobile">
+
+
+        <div class="row search-fixed m-t">
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+
+                <div class="typeahead-container">
+                    <div class="typeahead-container">
+                        <div class="typeahead-field">
+								<span class="typeahead-query">
+									<input id="categories"
+                                           class="form-control"
+                                           name="q"
+                                           type="search"
+                                           autocomplete="off" placeholder="Search...">
+								</span>
+                            <span class="typeahead-button" onclick="find_address($('#categories').val());">
+									<button type="submit">
+										<span  class="font-icon-search"></span>
+									</button>
+								</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-xs-20"></div>
+
+            </div>
+
+            <div class="col-md-3 p-x-0 p-mobile">
+                <div class="settings-fixed relative">
+
+
+                    <div class="dropdown">
+                        <a class="dropdown-toggle btn" id="dd-header-form-builder" data-target="#"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class=" glyphicon glyphicon-cog"></span>
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="dd-header-form-builder" x-placement="bottom-start">
+                            <a class="dropdown-item" id="menu_item_new_order" href="#" data-toggle="modal" data-target="#new_task"><span
+                                    class="font-icon scoo-icon scoo-icon-9"></span>New Order</a>
+
+                            <a class="dropdown-item" id="menu_item_delivery_report" href="javascript:void(0);" onclick="deliveryReport();"><span
+                                    class="font-icon scoo-icon scoo-icon-14"></span>Delivery Report</a>
+
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="logout();"><span
+                                    class="font-icon scoo-icon scoo-icon-14"></span>Logout</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--.row-->
+
+
+        <div id="map"></div>
+    </div><!--.container-fluid-->
+    <div class="modal fade" id="view_schedule" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-margin-b" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title"><span id="scheduleName">Aden Ghevondyan</span>
+                    </h5>
+
+                </div>
+                <div class="modal-body">
+
+                    <table class="table schedule-table">
+                        <tr>
+                            <td>Scheduled</td>
+                            <td>Actual</td>
+                            <td>Shift Length</td>
+                            <td>Scheduled Lunch Time</td>
+                            <td>Actual Lunch Time</td>
+                        </tr>
+                        <tr>
+                            <td class="grey-td" id="scheduleScheduled">9:00 am-5:00 pm</td>
+                            <td class="grey-td" id="scheduleActual">9:00 am-5:00 pm</td>
+                            <td class="grey-td" id="scheduleLength">5 hours</td>
+                            <td class="grey-td" id="scheduleLunch">1:00 pm</td>
+                            <td class="grey-td" id="scheduleActualLunch">3:00 pm</td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="schedule_route" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Route Data</h5>
+                </div>
+                <div class="empty-xs-30 empty-md-30"></div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                            <section class="tabs-section">
+                                <div class="tabs-section-nav tabs-section-nav-icons">
+                                    <div class="tbl">
+                                        <ul class="nav" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" href="#tabs-1-tab-1" role="tab"
+                                                   data-toggle="tab">
+													<span class="nav-link-in">
+														Schedule
+													</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#tabs-1-tab-2" role="tab" data-toggle="tab">
+													<span class="nav-link-in">
+													Route Assigment
+													</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#tabs-1-tab-3" role="tab" data-toggle="tab">
+													<span class="nav-link-in">
+													RTS
+													</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#tabs-1-tab-4" role="tab" data-toggle="tab">
+													<span class="nav-link-in">
+													DEVICE
+													</span>
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </div>
+                                </div><!--.tabs-section-nav-->
+
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade in active show" id="tabs-1-tab-1">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form id="scheduleReport">
+                                                    <table class="table routes-table text-center" id="scheduleContent">
+
+
+                                                    </table>
+
+
+
+                                                    <div class="row" style="margin-top: 30px;">
+                                                        <div class="col-md-8"></div>
+                                                        <div class="col-md-4">
+                                                            <input type="hidden" name="site_id" id="scheduleSiteID">
+                                                            <input type="hidden" name="date" id="scheduleDate">
+                                                            <a href="javascript:void(0);" onclick="submitScheduleReport();" class="btn btn-yellow2 width100">Submit Schedule Report</a>
+                                                        </div>
+                                                    </div>
+
+                                                </form>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div><!--.tab-pane-->
+                                    <div role="tabpanel" class="tab-pane fade" id="tabs-1-tab-2">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form id="routeReport">
+                                                    <table class="table routes-table text-center" id="routeContent">
+
+                                                    </table>
+
+                                                    <div class="row" style="margin-top: 30px;">
+                                                        <div class="col-md-8"></div>
+                                                        <div class="col-md-4">
+                                                            <input type="hidden" name="site_id" id="routeSiteID">
+                                                            <input type="hidden" name="date" id="routeDate">
+                                                            <a href="javascript:void(0);" onclick="submitRouteAssignment();" class="btn btn-yellow2 width100">Submit Route Assignment</a>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div><!--.tab-pane-->
+                                    <div role="tabpanel" class="tab-pane fade" id="tabs-1-tab-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form id="rtsReport">
+                                                    <table class="table routes-table text-center" id="rtsContent">
+
+                                                    </table>
+
+                                                    <div class="row" style="margin-top: 30px;">
+                                                        <div class="col-md-8"></div>
+                                                        <div class="col-md-4">
+                                                            <input type="hidden" name="site_id" id="rtsSiteID">
+                                                            <input type="hidden" name="date" id="rtsDate">
+                                                            <a href="javascript:void(0);" onclick="submitRTSAssignment();" class="btn btn-yellow2 width100">Submit RTS Assignment</a>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div><!--.tab-pane-->
+                                    <div role="tabpanel" class="tab-pane fade " id="tabs-1-tab-4">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form id="deviceReport">
+                                                    <table class="table routes-table text-center" id="deviceContent">
+
+
+                                                    </table>
+
+
+
+                                                    <div class="row" style="margin-top: 30px;">
+                                                        <div class="col-md-8"></div>
+                                                        <div class="col-md-4">
+                                                            <input type="hidden" name="site_id" id="deviceSiteID">
+                                                            <input type="hidden" name="date" id="deviceDate">
+                                                            <!--<a href="javascript:void(0);" onclick="submitDeviceReport();" class="btn btn-yellow2 width100">Submit Device Report</a>-->
+                                                        </div>
+                                                    </div>
+
+                                                </form>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div><!--.tab-content-->
+                            </section><!--.tabs-section-->
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="reporting" tabindex="1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body">
+                    <form id="hrReportForm">
+                        <div class="row d-flex align-items-center">
+                            <div class="col-md-1 text-center">
+                                <img src="img/reporting_icon.png" width="55">
+                            </div>
+                            <div class="col-md-11">
+                                <h5 class="modal-title" id="reportDriverTitle"></h5>
+                            </div>
+                        </div>
+
+                        <div class="empty-xs-30 empty-md-30"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 custom-select-1">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-md-1 mobile-center">
+                                        <img src="img/select-icon.png" width='25'>
+                                    </div>
+                                    <div class="col-md-10 mobile-center">
+                                        <input type="hidden" name="date" id="reportHRdate">
+                                        <input type="hidden" name="site_id" id="reportHRSite_id">
+                                        <input type="hidden" name="start" id="reportHRstart">
+                                        <input type="hidden" name="end" id="reportHRend">
+                                        <input type="hidden" name="crm_account_id" id="reportDriverId">
+                                        <select name="main_topic" id="reportTopic" onchange="loadReasons($(this));"  class="select2 select-icon">
+                                            <option value="0">Please Select Report</option>
+                                            <option value="1">HR Reporting</option>
+                                            <option value="2">NCNS</option>
+                                            <option value="3">LMCO</option>
+                                            <option value="4">Sent Home</option>
+                                            <option value="5">On-Road Reporting</option>
+                                            <option value="6">Amazon Reporting</option>
+                                            <!--<option value="7">Accident Reporting</option>-->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="empty-xs-40 empty-md-50"></div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-1 flex">
+                                        <p>Date</p>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <div class="form-group">
+                                            <div class='input-group date'>
+                                                <input id="daterange3" type="text" value="" name="date"
+                                                       class="form-control b-r-0">
+                                                <span class="input-group-addon">
+                                                <i class="font-icon font-icon-calend"></i>
+                                            </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-2 flex">
+                                        <p>Time</p>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="form-group">
+                                            <input type="text" name="time" class="form-control clockpicker" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="empty-xs-10 empty-md-10"></div>
+
+                        <div id="insertHRQuestions"></div>
+                        <div id="insertHRQuestions2" style="margin-top: 20px;"></div>
+                        <div id="insertHRQuestions3" style="margin-top: 20px;"></div>
+
+                        <div class="empty-xs-30 empty-md-30"></div>
+
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4 text-right width100">
+                                <a href="javascript:void(0);" onclick="submitHRReport();" class="btn btn-yellow2">Submit</a>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="profile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md-2" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            <img src="img/reporting_icon.png" width="55">
+                        </div>
+                        <div class="col-md-10">
+                            <div class="empty-xs-20 empty-md-15"></div>
+                            <h5 class="modal-title" id="profileName"></h5>
+                            <div class="empty-xs-20 empty-md-20"></div>
+                            <div class="row d-flex align-items-center">
+                                <div class="col-md-1 text-center">
+                                    <img src="img/ic_point.png" width="22">
+                                </div>
+                                <div class="col-md-10 mobile-center">
+                                    <span>Driver</span>
+                                </div>
+                            </div>
+                            <div class="empty-xs-20 empty-md-25"></div>
+                            <div class="row d-flex align-items-center">
+                                <div class="col-md-1 text-center">
+                                    <img src="img/ic_email.png" width="22">
+                                </div>
+                                <div class="col-md-10 mobile-center">
+                                    <a href="" class="black" id="profileEmail">ntownsend@satx.scoobeez.net</a>
+                                </div>
+                            </div>
+                            <div class="empty-xs-10 empty-md-15"></div>
+                            <div class="row d-flex align-items-center">
+                                <div class="col-md-1 text-center">
+                                    <img src="img/ic_phone.png" width="22">
+                                </div>
+                                <div class="col-md-10 mobile-center">
+                                    <a href="" class="black" id="profilePhone">(210) 232-8338</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a href="#" class="btn btn-icon btn-rounded phone_button btn-yellow3">Call</a>
+                            <div class="empty-xs-30 empty-md-0"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="#" class="btn btn-icon btn-rounded message_button btn-yellow3">Message</a>
+                            <div class="empty-xs-30 empty-md-0"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <a id="profileRescue" href="javascript:void(0);" data-toggle="modal" data-target="#resque"
+                               class="btn btn-icon btn-yellow2 width100" >Send Rescue</a>
+                            <div class="empty-xs-30 empty-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="resque" tabindex="4" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md-2" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rescueName"></h5>
+                </div>
+
+                <div class="modal-body">
+                    <div class="empty-xs-20 empty-md-30"></div>
+
+                    <div class="row">
+                        <div class="col-md-12 rescue">
+                            <select class="select2" id="rescueDrivers">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group clockpicker" data-autoclose="true">
+                                    <input type="text" class="form-control" id="rescueTime" value="">
+                                    <span class="input-group-addon">
+										<span class="glyphicon glyphicon-time font-icon"></span>
+									</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="form-control-static"><input type="text" class="form-control" id="rescuePackages"
+                                                                  placeholder="Packages"></p>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+                    <div class="row">
+                        <div class="col-md-7"></div>
+                        <div class="col-md-5 text-right width100">
+                            <input type="hidden" id="rescueDriverID">
+                            <a href="javascript:void(0);" id="submitRescueButton" onclick="submitRescue();" class="btn btn-yellow2">Submit</a>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="dispatcher_reports" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Dispatcher Reports</h5>
+                </div>
+                <div class="empty-xs-30 empty-md-30"></div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form class="hori-form">
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Routes Confirmed</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="routes_confirmed"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Routes Assigned</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="routes_assigned"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Ride-Alongs</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="number" class="form-control"
+                                                                              id="ride_alongs"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Quick Coverage</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="quick_coverages"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">DSP Late Cancellation</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="dsp_late_cancelations"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">AMZL Late Cancelation</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="amzl_late_cancelations"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Vehicle Count</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="vehicle_count"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Wave 1 Scheduled Start</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="wave1"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Wave 1 Actual Start</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="wave1_actual_start"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+                                <div class="form-group row d-flex align-items-center">
+                                    <label class="col-sm-4 form-control-label">Wave 1 Actual End</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-static"><input type="text" class="form-control"
+                                                                              id="wave1_actual_end"></p>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-0"></div>
+
+                                <input type="hidden" id="waveCount" value="1">
+
+                                <div id="insertWave">
+
+                                </div>
+
+                                <div class="form-group row d-flex align-items-center">
+                                    <div class="col-sm-8"></div>
+                                    <div class="col-sm-4 text-right">
+                                        <a href="javascript:void(0);" onclick="addWave();" class="black">Add Wave <img src="img/ic_add.png" width="40"></a>
+                                    </div>
+                                </div>
+
+                                <div class="empty-xs-40 empty-md-20"></div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-8"></div>
+                                    <div class="col-sm-4 text-right">
+                                        <input type="hidden" id="dispatcherReportID" value="">
+                                        <a href="javascript:void(0);" onclick="submitDispachersReport();" class="btn btn-yellow2 width100">Submit</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="bottom_reports" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Reports</h5>
+                </div>
+                <div class="empty-xs-30 empty-md-30"></div>
+
+                <div class="modal-body">
+
+                    <div class="row reports">
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-reports" style="display: initial!important;" id="hourlyReport">
+
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-30 empty-xs-30"></div>
+
+
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-5"><a href="#" id="todayEOSLink" target="_blank" class="btn btn-yellow2 width100">Today's EOS</a></div>
+                        <div class="col-md-5">
+                            <a href="javascript:void(0);" onclick="completeDay();" class="btn btn-yellow2 width100">UPD Totals</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="reports_complete" tabindex="1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="hourTitle">8am</h5>
+                    <h6 style="margin-right: 60px;"> <a href="http://scoobeez.com/dispatch/guide.pdf" target="_blank">Open Guide</a> </h6>
+                </div>
+
+
+                <div class="modal-body">
+                    <form id="hourSubmit">
+                        <div class="row reports">
+                            <div class="col-md-12">
+                                <table class="table table-reports-2 text-center" id="hourlyRouteReport">
+                                </table>
+                            </div>
+                        </div>
+                        <div class="empty-xs-20 empty-md-20"></div>
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4">
+                                <input type="hidden" name="hour" id="hourHour">
+                                <input type="hidden" name="site_id" id="hourSiteID">
+                                <input type="hidden" name="date" id="hourDate">
+                                <a href="javascript:void(0);" onclick="submitHour();" class="btn btn-yellow2 width100">Submit</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="complete_day" tabindex="1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">UPD Summary</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="margin-top: 15px;">
+                        <div class="col-md-12" id="send_comment_content">
+                            <h3 style="color: #000;font-size: 20px; margin-top: 0; margin-bottom: 15px;">UPD</h3>
+                            <p>Team, </p>
+                            <p>Dispatch: Use the following summary to input UPD in the Amazon UPD submission Portal. </p>
+                            <p>Total combined time requested: <span id="combined_time_report"></span>
+                            <table style="margin-bottom: 30px; width: 90%; margin: 20px auto;">
+                                <tbody id="end_of_day_summary">
+
+                                </tbody>
+                            </table>
+
+                            <br><br>
+                        </div>
+                        <p style="text-align: center;">
+                            <a href="javascript:void(0);" onclick="submitDay();" class="btn btn-yellow2 width100">Complete Day</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="reports_comment" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body">
+
+                    <div class="row d-flex align-items-center">
+                        <div class="col-md-12">
+                            <h5 class="modal-title" id="commentTitle"></h5>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-40 empty-md-50"></div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="form-control-static">
+                                <span>Tile Lost: </span> <span id="commentRequired"> </span> <span id="commentDelivered"> </span>
+                                <input type="text" class="form-control" id="commentTime"
+                                       placeholder="Time Lost"></p>
+                        </div>
+
+                    </div>
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select id="commentExplanation" class="select2">
+                                <option>Late Departure</option>
+                                <option>Late Sortation</option>
+                                <option>Late Line Haul</option>
+                                <option>Safety Related Delay</option>
+                                <option>Delivery Address Not On Route</option>
+                                <option>Customer Reattempts</option>
+                                <option>Station Debrief</option>
+                                <option>Device Issues</option>
+
+                                <!--Scoobeez-->
+                                <option>DA Poor Performance</option>
+                                <option>Detour</option>
+                                <option>Long Lunch</option>
+                                <option>Long Break</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-10 empty-md-25"></div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <textarea rows="6" class="form-control" id="commentDescription" placeholder="Example: AMZL Cancelation"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4 text-right width100">
+                            <input type="hidden" id="commentUser">
+                            <input type="hidden" id="commentHour">
+                            <a href="javascript:void(0);" onclick="submitComment();" class="btn btn-yellow2">Submit</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="progress_statics" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Daily Report</h5>
+                </div>
+                <div class="modal-body" id="progressStatistics">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="all_rescues" tabindex="3" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Rescues</h5>
+                </div>
+                <div class="modal-body" id="rescueinsert">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="vehicle_inspections" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Inspections</h5>
+                </div>
+                <div class="modal-body" id="vehicleInspectionContent">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="incident_reports" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Incident Reports</h5>
+                </div>
+                <div class="modal-body" id="incidentReportsContent">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="inspections_view" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Inspection</h5>
+                </div>
+                <div class="modal-body inspections">
+
+                    <div id="inspection_content">
+
+
+
+                    </div>
+
+                    <form id="inspectionForm">
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Ending Milage</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input id="inspection_milage" class="form-control" type="text"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Notes</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><textarea id="inspection_notes" class="form-control" rows="6"></textarea></p>
+                            </div>
+                        </div>
+                        <div class="form-group row d-flex align-items-center">
+                            <div class="col-sm-8"></div>
+                            <div class="col-sm-4">
+                                <input id="inspection_id" type="hidden">
+                                <a href="javascript:void(0);" onclick="inspection_submit()" class="btn btn-yellow2 width100">Submit</a>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="inventory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+                    <div class="row" id="vehicleListings">
+                    </div>
+
+                    <div class="empty-xs-20 empty-md-20"></div>
+
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <a href="#" data-toggle="modal" data-target="#add_inventory"
+                               class="btn btn-yellow2 width100">Add Inventory</a>
+                        </div>
+                    </div>
+
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="view_inventory" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewInventory_title">Tesla</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+                    <div class="row view_inventory">
+                        <div class="col-md-6 text-center">
+                            <img src="img/tesla.png" width="95%">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="empty-xs-30 empty-md-0"></div>
+                            <div class="row">
+                                <div class="col-4" >
+                                    <p>Status</p>
+                                </div>
+                                <div class="col-8 grey-bg" id="viewInventory_status">
+                                    <p>Active</p>
+                                </div>
+                            </div>
+                            <div class="empty-xs-40 empty-md-10"></div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <p>Year</p>
+                                </div>
+                                <div class="col-8" id="viewInventory_year">
+                                    <p>2017</p>
+                                </div>
+                            </div>
+                            <div class="empty-xs-40 empty-md-10"></div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <p>Make</p>
+                                </div>
+                                <div class="col-8 grey-bg" id="viewInventory_make">
+                                    <p>Tesla</p>
+                                </div>
+                            </div>
+                            <div class="empty-xs-40 empty-md-10"></div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <p>Model</p>
+                                </div>
+                                <div class="col-8" id="viewInventory_model">
+                                    <p>Maxima</p>
+                                </div>
+                            </div>
+                            <div class="empty-xs-40 empty-md-10"></div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <p>Mileage</p>
+                                </div>
+                                <div class="col-8 grey-bg" id="viewInventory_milage">
+                                    <p>3400</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="empty-xs-40 empty-md-20"></div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>Description</p>
+                            <p class="in-desc" id="viewInventory_description"></p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" id="noteContent">
+                            <p>Notes</p>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-50 empty-md-50"></div>
+
+                    <div class="row">
+                        <div class="col-md-6"></div>
+                        <div class="col-md-2">
+                            <a href="#" data-toggle="modal" data-target="#inventory_note"
+                               class="btn btn-yellow2 width100">Note</a>
+                            <div class="empty-xs-40 empty-md-0"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="javascript:void(0);" id="inventory_edit"
+                               class="btn btn-yellow2 width100  btn-with-icon  edit_button">Edit Description</a>
+                            <div class="empty-md-0"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="inventory_note" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Note</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <textarea class="form-control" id="vehicleNote" rows="8" placeholder="Your Note"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="empty-xs-50 empty-md-50"></div>
+
+                    <div class="row">
+                        <div class="col-md-8"></div>
+
+                        <div class="col-md-4">
+                            <input type="hidden" id="vehicleNoteID">
+                            <a href="javascript:void(0);" onclick="insertVehicleNote();" class="btn btn-yellow2 width100">Submit</a>
+                        </div>
+                    </div>
+
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="edit_inventory" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="vehicleEdit_license_place">Tesla</h5>
+                </div>
+                <div class="modal-body">
+
+                    <form id="editInventory">
+                        <div class="empty-xs-30 empty-md-30"></div>
+
+                        <div class="row view_inventory">
+                            <div class="col-md-6 text-center">
+                                <p><a href="#"><img src="img/tesla.png" width="95%"></a></p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p>Status</p>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <select id="vehicleEdit_status" name="status" class="select2">
+                                            <option value="1">Active</option>
+                                            <option value="2">On Hold</option>
+                                            <option value="0">Inactive</option>
+                                            <option value="4">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-10"></div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p>Year</p>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control" Value="2017" name="year" id="vehicleEdit_year">
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-10"></div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p>Make</p>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control" Value="Tesla" name="make" id="vehicleEdit_make">
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-10"></div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p>Model</p>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control" Value="Maxima" name="model" id="vehicleEdit_model">
+                                    </div>
+                                </div>
+                                <div class="empty-xs-40 empty-md-10"></div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p>Milleage</p>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control" Value="3400" name="mileage" id="vehicleEdit_milage">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="empty-xs-20 empty-md-20"></div>
+
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <p>Description</p>
+                                <textarea id="vehicleEdit_description" class="form-control" name="description" rows="4"></textarea>
+
+                            </div>
+                        </div>
+
+                        <div class="empty-xs-40 empty-md-30"></div>
+
+                        <div class="row view_inventory">
+                            <div class="col-md-4">
+                                <p>Site</p>
+                            </div>
+                            <div class="col-md-8">
+                                <select name="site_id" id="vehicleEdit_site" class="select2">
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="empty-xs-50 empty-md-50"></div>
+
+                        <div class="row">
+                            <div class="col-md-8"></div>
+
+                            <div class="col-md-4">
+                                <input type="hidden" id="editVehicleInventoryID" name="id" value="">
+                                <a href="javascript:void(0)" onclick="update_inventory();" class="btn btn-yellow2 width100">Save Changes</a>
+                            </div>
+                        </div>
+
+
+                        <div class="empty-xs-10 empty-md-10"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="add_inventory" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Inventory</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+
+                    <form class="hori-form" id="newInventory">
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">License Plate</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control" name="license_plate"
+                                                                      id="inventoryLicense"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Starting Milage</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control" name="mileage"
+                                                                      id="inventoryMilage"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Vin Number</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control" name="vin"
+                                                                      id="inventoryVin"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Year</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control" name="year"
+                                                                      id="inventoryYear"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Make</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control" name="make"
+                                                                      id="inventoryMake"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Model</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control" name="model"
+                                                                      id="inventoryModel"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Description</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control" name="description"
+                                                                      id="inventoryDescription"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Status</label>
+                            <div class="col-sm-8">
+                                <select id="inventoryStatus" name="status" class="select2">
+                                    <option value="1">Active</option>
+                                    <option value="2">On Hold</option>
+                                    <option value="0">Inactive</option>
+                                    <option value="4">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="empty-xs-30 empty-md-30"></div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-8"></div>
+                            <div class="col-sm-4 text-right">
+                                <input type="hidden" name="site_id" id="inventorySiteID" value="">
+                                <a href="javascript:void(0);" onclick="submit_inventory();" class="btn btn-yellow2 width100">Submit</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="van_detail" tabindex="2" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Van Details</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+    <table id="van_detail_content" class="table text-center">
+
+
+
+    </table>
+
+
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="supplies" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">SUPPLIES</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+
+                    <form class="hori-form">
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-2 form-control-label">Title</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static"><input type="text" class="form-control" id="suppliesTitle"
+                                                                      placeholder="Enter here"></p>
+                            </div>
+                        </div>
+                        <div class="form-group row d-flex align-items-center">
+
+                            <div class="col-sm-12">
+                                <textarea class="form-control" rows="8" id="suppliesDescription" placeholder="Your Report Here"></textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="empty-xs-30 empty-md-30"></div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-8"></div>
+                            <div class="col-sm-4 text-right">
+                                <a href="javascript:void(0);" onclick="submitSupplies()" class="btn btn-yellow2 width100">Submit</a>
+                            </div>
+                        </div>
+                    </form>
+
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="new_task" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">New Task</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+
+                    <form class="hori-form">
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Order Type</label>
+                            <div class="col-sm-8">
+                                <select class="select2">
+
+                                    <option>Nicholas Townsend</option>
+                                    <option>Ryan Evon</option>
+                                    <option>Jerimiah Figueroa</option>
+                                    <option>Sean Curtiss</option>
+                                    <option>Erickson Ramos</option>
+                                    <option>Rebecca Jaramillo</option>
+                                    <option>Dasia Hawkins</option>
+                                    <option>Devon Jones</option>
+                                    <option>Corey Brown</option>
+                                    <option>Christopher Bradford</option>
+                                    <option>Sarah Vader</option>
+                                    <option>Brandi Miller</option>
+                                    <option>Nicholas Townsend</option>
+                                    <option>Ryan Evon</option>
+                                    <option>Jerimiah Figueroa</option>
+                                    <option>Sean Curtiss</option>
+                                    <option>Erickson Ramos</option>
+                                    <option>Rebecca Jaramillo</option>
+                                    <option>Dasia Hawkins</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Route Assigment</label>
+                            <div class="col-sm-8">
+                                <select class="select2">
+                                    <option></option>
+                                    <option></option>
+                                    <option></option>
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <div class="col-sm-12"><p class="black">Order Information</p></div>
+
+                        </div>
+
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Order ID</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control"
+                                                                      id="inputPassword"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Address</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control"
+                                                                      id="inputPassword"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Order</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control"
+                                                                      id="inputPassword"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Complete After</label>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <div class='input-group date'>
+                                        <input id="daterange4" type="text" value="10/24/2017"
+                                               class="form-control b-r-0">
+                                        <span class="input-group-addon">
+										<i class="font-icon font-icon-calend"></i>
+									</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <input type="text" class="form-control clockpicker" value="09:32">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Complete Before</label>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <div class='input-group date'>
+                                        <input id="daterange5" type="text" value="10/24/2017"
+                                               class="form-control b-r-0">
+                                        <span class="input-group-addon">
+										<i class="font-icon font-icon-calend"></i>
+									</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <input type="text" class="form-control clockpicker" value="09:32">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+                        <div class="empty-md-10 empty-md-10"></div>
+                        <div class="form-group row d-flex align-items-center">
+                            <div class="col-sm-12"><p class="black">Contact Information</p></div>
+
+                        </div>
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Name</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control"
+                                                                      id="inputPassword"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Phone Number</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control"
+                                                                      id="inputPassword"></p>
+                            </div>
+                        </div>
+                        <div class="empty-xs-40 empty-md-0"></div>
+
+                        <div class="form-group row d-flex align-items-center">
+                            <label class="col-sm-4 form-control-label">Notes</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static"><input type="text" class="form-control"
+                                                                      id="inputPassword"></p>
+                            </div>
+                        </div>
+
+
+                        <div class="empty-xs-40 empty-md-30"></div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-8"></div>
+                            <div class="col-sm-4 text-right">
+                                <a href="#" class="btn btn-yellow2 width100">Submit</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="location_sites" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Please Select a Location and Site</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+
+                    <form class="hori-form">
+                        <div class="form-group row">
+
+                            <div class="col-sm-12">
+                                <select class="select2" id="setLocation" onchange="pullSites($(this));">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="empty-md-10 empty-md-10"></div>
+
+                        <div class="form-group row">
+
+                            <div class="col-sm-12">
+                                <select class="select2" id="setSite" style="display: none;">
+
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="empty-xs-30 empty-md-30"></div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-8"></div>
+                            <div class="col-sm-4 text-right">
+                                <a href="javascript:void(0);" onclick="set_site()" class="btn btn-yellow2 width100">Confirm</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deliveryReport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Delivery Report</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="empty-xs-30 empty-md-30"></div>
+
+                    <div class="form-group row">
+
+                        <div class="col-sm-12">
+                            <select class="select2" id="devlieryReportMonth">
+                                <option>SEP-2017</option>
+                                <option>AUG-2017</option>
+                                <option>JULY-2017</option>
+                                <option>JUNE-2017</option>
+                                <option>MAY-2017</option>
+                                <option>APR-2017</option>
+                                <option>MAR-2017</option>
+                                <option>FEB-2017</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="empty-md-10 empty-md-10"></div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-8"></div>
+                        <div class="col-sm-4 text-right">
+                            <a href="javascript:void(0);" onclick="pullDeliveryReport()" class="btn btn-yellow2 width100">Confirm</a>
+                        </div>
+                    </div>
+                    </form>
+
+                    <div class="empty-xs-10 empty-md-10"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deliveryReportResults" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document" style="max-width: 70% !important;width: 100% !important;">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Delivery Results</h5>
+                </div>
+                <div class="modal-body" id="deliveryRepResults">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal" id="reported_drivers" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Reported Drivers</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form id="reportedDrivers">
+                                <table class="table text-center" id="reportedContent">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Drivers</th>
+                                        <th class="text-center">Report</th>
+                                        <th class="text-center">Reason</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="empty-xs-30 empty-md-30"></div>
+
+                <div class="modal-body">
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="fuel_info" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true" style="box-shadow: none !important;">
+        <div class="modal-dialog " role="document" style="box-shadow: none !important;width: 250px;height: 80px;">
+            <div class="modal-content" style="width: 250px;height: 80px;left:40%">
+                <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                           Fuel Level
+                        </div>
+                        <div class="col-md-6" >
+<input id="fuel_level" style="width: inherit;border:none">
+
+                            </input>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="empty-xs-30 empty-md-30"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-b" id="menu_item_hour_report" style="margin-right: 40px;">
+        <a href="javascript:void(0);" onclick="run_by_hour();" data-toggle="modal" data-target="#bottom_reports"><img src="img/warning.png" width="45"></a>
+
+
+        <a  style="display: none;" class="dropdown-toggle sublist-dropdown" href="https://example.com" id="dropdownMenuLink"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="img/marker.png" width="45">
+        </a>
+        <div class="dropdown-menu dropdown-padding dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" href="#"><img src="img/map1.png" width="20"> Pickup Location</a>
+            <a class="dropdown-item" href="#"><img src="img/map2.png" width="20"> Driver</a>
+            <a class="dropdown-item" href="#"><img src="img/map3.png" width="20"> Dropoff Location</a>
+        </div>
+
+        <div id="switch-source" >
+        <button  type="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img  src="img/menu.png" alt="menu.png"/>
+        </button>
+        <ul class="dropdown-menu" id="switch-source-map">
+        <li><a class="dropdown-item" href="#" style="color:black">Beezkeeper</a></li>
+        <li><a class="dropdown-item" href="#" style="color:black">Zubie</a></li>
+        <li><a class="dropdown-item" href="#" style="color:black">Beezkeeper & Zubie</a></li>
+
+        </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="js/lib/jquery/jquery-3.2.1.min.js"></script>
+<script src="js/lib/popper/popper.min.js"></script>
+<script src="js/lib/tether/tether.min.js"></script>
+<script src="js/lib/bootstrap/bootstrap.min.js"></script>
+<script src="js/plugins.js"></script>
+
+<script src="js/lib/typeahead/jquery.typeahead.min.js"></script>
+<script src="js/lib/jquery-tag-editor/jquery.caret.min.js"></script>
+<script src="js/lib/jquery-tag-editor/jquery.tag-editor.min.js"></script>
+<script src="js/lib/bootstrap-select/bootstrap-select.min.js"></script>
+<script src="js/lib/select2/select2.full.min.js"></script>
+
+<script type="text/javascript" src="js/lib/moment/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="js/lib/flatpickr/flatpickr.min.js"></script>
+<script src="js/lib/clockpicker/bootstrap-clockpicker.min.js"></script>
+<script src="js/lib/clockpicker/bootstrap-clockpicker-init.js"></script>
+<script src="js/lib/daterangepicker/daterangepicker.js"></script>
+<script src="js/lib/bootstrap-select/bootstrap-select.min.js"></script>
+<script src="js/lib/prism/prism.js"></script>
+<script>
+    $(function () {
+        function cb(start, end) {
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        }
+
+        cb(moment().subtract(29, 'days'), moment());
+
+
+        $('#daterange2').daterangepicker();
+
+        $('#daterange3').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true
+        });
+
+        $('#daterange4').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true
+        });
+
+        $('#daterange5').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true
+        });
+
+        $('#daterange').on('show.daterangepicker', function (ev, picker) {
+            /*$('.daterangepicker select').selectpicker({
+             size: 10
+             });*/
+        });
+
+        /* ==========================================================================
+         Datepicker
+         ========================================================================== */
+
+        $('.flatpickr').flatpickr();
+        $("#flatpickr-disable-range").flatpickr({
+            disable: [
+                {
+                    from: "2016-08-16",
+                    to: "2016-08-19"
+                },
+                "2016-08-24",
+                new Date().fp_incr(30) // 30 days from now
+            ]
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $(".clicked").on("click", function (e) {
+            $(this).addClass("widget-selected").siblings().removeClass("widget-selected");
+
+        });
+        $(".close").on("click", function (e) {
+
+            $(".widget-selected").removeClass("widget-selected");
+
+        });
+        $(".modal").on("click", function (e) {
+
+            $(".widget-selected").removeClass("widget-selected");
+
+        });
+    })
+
+</script>
+
+<script src="js/lib/typeahead/jquery.typeahead.min.js"></script>
+<script src="js/lib/select2/select2.full.min.js"></script>
+<script src="js/lib/typeahead/typeahead-init.js"></script>
+<script src="js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="js/pnotify.custom.min.js"></script>
+<link href="css/pnotify.custom.min.css" media="all" rel="stylesheet" type="text/css"/>
+
+<script src="http://momentjs.com/downloads/moment.min.js"></script>
+<script src="http://momentjs.com/downloads/moment-timezone-with-data.min.js"></script>
+
+<script src="js/app.js"></script>
+<script src="js/application.js"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzdxLJneYp1uxdU1d8_5aDbMC1IMHoV8M"></script>
+<script src="js/maps.js"></script>
+
+<script>
+    var customer_id = window.localStorage.getItem('token');
+    if (!customer_id) {
+        window.location = 'index.html';
+    }else{
+        pull_info();
+    }
+</script>
+
+
+</body>
+</html>
